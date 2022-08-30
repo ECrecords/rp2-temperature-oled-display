@@ -14,28 +14,25 @@ int main()
 
     config.address = AHT10_DEFAULT_ADDRESS;
     config.i2c = i2c_default;
+    config.baudrate = 100 * 1000;
     config.scl_pin = PICO_DEFAULT_I2C_SCL_PIN;
     config.sda_pin = PICO_DEFAULT_I2C_SDA_PIN;
 
     stdio_init_all();
-    sleep_ms(10);
+    sleep_ms(1000);
 
-    sleep_ms(2000);
-    printf("Hello, Pico!\n");
-    sleep_ms(2000);
-    
+    printf("\n----- Temperature Visualizer via OLED -----\n");
+
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
     gpio_put(LED_PIN, 1);
 
-    aht10_init( (u_int8_t)AHT10_DEFAULT_ADDRESS, &config, &sensor);
+    aht10_init(AHT10_DEFAULT_ADDRESS, &config, &sensor);
 
-    // while (1)
-    // {
-    //     printf("Hello, Pico!\n");
-    //     sleep_ms(1000);
-    //     // aht10_read_sensor(&sensor);
-    //     // printf("TEMP: %i\r", &(sensor.temp_data));
-    //     // sleep_ms(10);
-    // }
+    while (1)
+    {
+        aht10_read_sensor(&sensor);
+        printf("T: %.2lf C, %.2lf F\t\tRH: %.2lf\r", sensor.temp_cel, sensor.temp_far, sensor.rh);
+        sleep_ms(1000);
+    }
 }
